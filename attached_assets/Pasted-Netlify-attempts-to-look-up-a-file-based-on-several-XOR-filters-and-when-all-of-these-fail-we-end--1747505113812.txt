@@ -1,0 +1,24 @@
+Netlify attempts to look up a file based on several XOR filters, and when all of these fail, we end up serving a 404 page. For example, a request made to /example/ would check /example/index.html, /example.html, /example/home.html and several other combinations (not necessarily in the same order) before hitting the 404. However, in case you were not expecting a 404 at a particular URL, you might be interested in finding out the reason and potentially fixing it. This guide aims to cover the most common reasons (and their solutions) on Netlify. This guide assumes that the common reasons for a 404 (like an incorrect URL) do not apply.
+
+Incorrect publish directory: If someone is trying to deploy their site directly, without any build step, a common scenario we’ve noticed is that they upload their site to a git repo and place all the files inside a sub-folder. However, when connecting the site to Netlify, due to the lack of framework, we leave the responsibility of configuring the correct settings to the user and some users don’t configure the publish directory. Thus, when they visit their site, they see a 404, as the files actually live inside https://their-site.netlify.app/sub-folder. In this case, either move all your files outside the sub-folder or change the publish directory in Netlify Site settings.
+
+SPA redirect rule missing: A variety of tools, like Create React App, Vite, Angular, etc., are used to create Single-Page Applications. These applications don’t have an HTML page per path but instead rely on JavaScript to handle the navigation. For such apps, it is important to have the following contents:
+
+/* /index.html 200
+as the contents of the _redirects file which should exist in the public (or similar) folder, so that it’s copied over to your publish directory when the site is being built.
+
+Server-Side Rendered Content: A lot of frameworks these days, like Next.js, Gatsby, Nuxt, Astro, Remix, SvelteKit, etc. support Server Side Rendering on Netlify. Netlify officially maintains its own integrations for Next.js and Gatsby, while the other frameworks maintain their integrations for Netlify. In the case of Next.js, for example, the Next.js Runtime can generate several redirects for even a minimal Next.js site. Even in case of Gatsby, if you use SSR/DSG, we would generate a few redirects. For any other framework that uses SSR using Netlify Functions, there would be at least 1 redirect that would handle this routing. So, if your deploy shows no redirect (or a fairly less number of redirects in case of Next.js), you can be sure that something went wrong with the integration. It might be worth trying to consult docs of the respective integration to make sure it’s correctly configured.
+
+Another situation with SSR could be that, you could be sending a 404 for a request based on some conditional logic you might be having in your code.
+
+In case the 404 is coming from a proxied URL, make sure the proxy destination is not serving a 404.
+
+In case your HTML page loads fine, but the assets are missing/throwing a 404, make sure their paths are correct. Create React App checks for homepage in package.json, and thus, could configure the paths to the assets differently than expected.
+
+Check if you’re running any Edge Functions that could be blocking the request.
+
+If you’re using rewrites to proxy a site into the sub-directory of another, make sure the assets are published at a URL that matches the directory structure of the proxy-source. You can always use <base> tag or absolute URLs to make sure assets load reliably.
+
+In case of doubts or confusion, it could be useful to try to build your site locally (using the build command and not the dev server) or browse/download your deploy as described in this article: New feature: Browse files in your deploy with the Deploy File Browser , to make sure a file actually exists at the path you’re requesting.
+
+If none of this applies to you or if you’re still having issues, please open another thread to discuss. Make sure to include as many details as possible regarding your setup.
