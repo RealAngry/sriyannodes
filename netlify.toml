@@ -1,0 +1,23 @@
+
+[build]
+  command = "npm run build"
+  publish = "dist/public"
+  functions = "netlify/functions"
+
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/api/:splat"
+  status = 200
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+[[headers]]
+  for = "/*"
+    [headers.values]
+    Access-Control-Allow-Origin = "*"
+    Access-Control-Allow-Methods = "GET, POST, PUT, DELETE, OPTIONS"
+    Access-Control-Allow-Headers = "Origin, X-Requested-With, Content-Type, Accept, Authorization"
+    Cache-Control = "public, max-age=0, must-revalidate"
