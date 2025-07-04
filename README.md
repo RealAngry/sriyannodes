@@ -34,7 +34,7 @@ Welcome to **HostingWeb**, a sleek and responsive website for a fictional hostin
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/RealAngry/SriyanNodes
+git clone https://github.com/RealAngry/HostingWeb
 cd hostingweb
 
 2. Install Dependencies
